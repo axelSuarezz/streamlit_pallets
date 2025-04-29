@@ -24,7 +24,7 @@ if st.session_state.get("authenticated"):
     # Carga de datos
     @st.cache_data
     def load_data():
-        return pd.read_excel('C:/Users/Sistemas/Desktop/proyecto_pallets/data/marzo_limpio.xlsx')
+        return pd.read_excel('C:/Users/Sistemas/streamlit_pallets/data/marzo_limpio.xlsx')
 
     df = load_data()
     df['fecha'] = pd.to_datetime(df['fecha'])
