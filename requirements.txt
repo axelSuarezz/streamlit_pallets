@@ -1,3 +1,4 @@
 streamlit>=1.32.0  # Versión mínima garantizada
 pandas>=2.0.0     # Acepta actualizaciones de parches
 plotly~=5.15.0    # Permite 5.15.X pero no 5.16.0
+openpyxl>=3.1.0
