@@ -1,33 +1,40 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import os
 from datetime import datetime
 
 # Configuración de la página
 st.set_page_config(page_title="Análisis Temporal de Pallets", layout="wide")
 
-# Autenticación
-if not st.session_state.get("authenticated", False):
-    password = st.text_input("🔐 Ingresa la contraseña para acceder:", type="password")
-    clave_valida = st.secrets["general"]["PASSWORD"]
+# --- Ruta del archivo (compatible con Windows y Linux) ---
+def get_file_path():
+    # Ruta en Windows
+    windows_path = r"C:\Users\Sistemas\streamlit_pallets\data\marzo_limpio.xlsx"
+    # Conversión para Linux (Streamlit Cloud / Docker)
+    linux_path = windows_path.replace("C:\\", "/mnt/c/").replace("\\", "/")
+    
+    # Verifica cuál ruta existe
+    if os.path.exists(windows_path):
+        return windows_path
+    elif os.path.exists(linux_path):
+        return linux_path
+    else:
+        st.error("❌ No se encontró el archivo en ninguna ruta esperada.")
+        st.stop()
 
-    if password == clave_valida:
-        st.session_state.authenticated = True
-        st.rerun()
-    elif password != "":
-        st.error("❌ Contraseña incorrecta")
-        st.stop()  # Detiene la ejecución si la contraseña es incorrecta
+# Carga de datos
+@st.cache_data
+def load_data():
+    file_path = get_file_path()
+    return pd.read_excel(file_path)
 
-# Contenido de la app: solo se ejecuta si estás autenticado
-if st.session_state.get("authenticated"):
-
-    # Carga de datos
-    @st.cache_data
-    def load_data():
-        return pd.read_excel('marzo_limpio.xlsx')
-
+try:
     df = load_data()
     df['fecha'] = pd.to_datetime(df['fecha'])
+except Exception as e:
+    st.error(f"Error al cargar el archivo: {e}")
+    st.stop()
 
     # Sidebar con controles
     st.sidebar.header("🔍 Filtros de Análisis")
