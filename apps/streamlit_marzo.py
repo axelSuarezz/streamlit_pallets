@@ -141,3 +141,5 @@ if st.session_state.get("authenticated"):
             help="Positivo = exceso, Negativo = dentro del cupo"),
         'Exceso Palets contra (Fijo+Variable)': '⚠️ Exceso de Pallets' }
     )
+
+#comentario prueba para analizar.
