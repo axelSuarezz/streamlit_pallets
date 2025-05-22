@@ -25,9 +25,21 @@ if st.session_state.get("authenticated"):
     @st.cache_data
     def load_data():
         return pd.read_excel('data/marzo_limpio.xlsx')
+    
+    @st.cache_data
+    def load_rotacion():
+        return pd.read_excel('data/copia_de_df_completo.xlsx')
+
+    df_rotacion = load_rotacion()
+
 
     df = load_data()
     df['fecha'] = pd.to_datetime(df['fecha'])
+
+    promedio_rotacion_mensual = df_rotacion['promedio_rotacion_mensual'].mean()
+    base_fija = 10
+    variable = base_fija * promedio_rotacion_mensual
+
 
     # Sidebar con controles
     st.sidebar.header("🔍 Filtros de Análisis")
@@ -101,8 +113,14 @@ if st.session_state.get("authenticated"):
 
     # Métricas complementarias
     st.subheader("📊 Resumen por Socio Seleccionado")
+    st.subheader("🔁 Parámetros de Rotación")
+    st.write(f"📌 Base fija: {base_fija} pallets")
+    st.write(f"📈 Promedio rotación mensual (desde otro Excel): {promedio_rotacion_mensual:.2f}")
+    st.write(f"🔢 Base variable (fijo x rotación): {variable:.2f} pallets")
+
 
     for socio in selected_socios:
+        
         socio_data = filtered_df[filtered_df['socio'] == socio]
         if not socio_data.empty:
             col1, col2, col3 = st.columns(3)
