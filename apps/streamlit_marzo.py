@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import os
 from datetime import datetime
 
 # Configuración de la página
@@ -21,25 +22,28 @@ if not st.session_state.get("authenticated", False):
 # Contenido de la app: solo se ejecuta si estás autenticado
 if st.session_state.get("authenticated"):
 
-    # Carga de datos
-    @st.cache_data
-    def load_data():
-        return pd.read_excel('data/marzo_limpio.xlsx')
-    
+
+# Obtener la ruta absoluta de la carpeta donde está el script
+    BASE_DIR = os.path.dirname(__file__)  # Esto apunta a la carpeta 'apps'
+
     @st.cache_data
     def load_rotacion():
-        return pd.read_excel('data/copia_de_df_completo.xlsx')
+        filepath = os.path.join(BASE_DIR, '..', 'data', 'copia_de_df_completo.xlsx')
+        return pd.read_excel(filepath)
+
+    @st.cache_data
+    def load_data():
+        filepath = os.path.join(BASE_DIR, '..', 'data', 'marzo_limpio.xlsx')
+        return pd.read_excel(filepath)
 
     df_rotacion = load_rotacion()
-
-
     df = load_data()
     df['fecha'] = pd.to_datetime(df['fecha'])
 
+# Cálculos
     promedio_rotacion_mensual = df_rotacion['promedio_rotacion_mensual'].mean()
     base_fija = 10
     variable = base_fija * promedio_rotacion_mensual
-
 
     # Sidebar con controles
     st.sidebar.header("🔍 Filtros de Análisis")
